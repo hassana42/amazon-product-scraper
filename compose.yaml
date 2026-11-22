@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:${SCRAPER_PORT:-8000}:8000"
+    environment:
+      SCRAPER_API_KEY: "${SCRAPER_API_KEY:?Set SCRAPER_API_KEY in .env}"
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      EMBEDDING_MODE: "${EMBEDDING_MODE:-gemini}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-}"
+    volumes:
+      - chroma:/data/chroma
+    restart: unless-stopped
+
+volumes:
+  chroma:

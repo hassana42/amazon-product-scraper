@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="img-src 'self' https://*.media-amazon.com https://media-amazon.com https://*.ssl-images-amazon.com https://ssl-images-amazon.com https://*.images-amazon.com https://images-amazon.com">
+  <meta name="theme-color" content="#0B0F19">
+  <title>Amazon Product Scraper</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script type="module" src="dashboard.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a href="#overview" class="wordmark"><span class="brand-mark" aria-hidden="true"></span><span>Product Scraper<small>Amazon catalog</small></span></a>
+      <nav aria-label="Workspace" class="workspace-nav">
+        <a href="#overview" data-route="overview"><span aria-hidden="true">◫</span>Overview</a>
+        <a href="#catalog" data-route="catalog"><span aria-hidden="true">▦</span>Product Catalog</a>
+        <a href="#search" data-route="search"><span aria-hidden="true">⌕</span>AI Search</a>
+        <a href="#batch" data-route="batch"><span aria-hidden="true">⧉</span>Batch Scraper</a>
+        <a href="#compare" data-route="compare"><span aria-hidden="true">◧</span>Compare Products</a>
+        <a href="#settings" data-route="settings"><span aria-hidden="true">⚙</span>Settings</a>
+      </nav>
+    </aside>
+    <div class="main-area">
+      <header class="topbar">
+        <div class="topbar-main"><button id="nav-toggle" class="button icon-button" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false">☰</button><span id="top-title">Overview</span></div>
+        <div class="nav-actions">
+          <span id="mode-status" class="mode-pill" hidden></span>
+          <span id="connection-status" class="connection-state" role="status">Not connected</span>
+          <button class="button small" id="theme" type="button" aria-pressed="false">Light mode</button>
+          <button class="button secondary" id="settings" type="button">Connection</button>
+        </div>
+      </header>
+      <main class="workspace" id="workspace" tabindex="-1">
+        <section id="page-overview" data-page="overview">
+          <header class="page-heading"><div><h1 tabindex="-1">Overview</h1><p>Track your catalog and Amazon collection activity.</p></div><a class="button primary" href="#batch">New batch</a></header>
+          <section class="stats" aria-label="Catalog activity">
+            <div><span class="metric-icon" aria-hidden="true">▦</span><span>Products indexed</span><strong id="stat-products">—</strong></div>
+            <div><span class="metric-icon" aria-hidden="true">✓</span><span>Successful scrapes</span><strong id="stat-scrapes">0</strong><small>This tab</small></div>
+            <div><span class="metric-icon" aria-hidden="true">!</span><span>Failed scrapes</span><strong id="stat-failures">0</strong><small>This tab</small></div>
+            <div><span class="metric-icon" aria-hidden="true">◎</span><span>Supported marketplaces</span><strong id="stat-markets">19</strong></div>
+          </section>
+          <div class="overview-grid">
+            <section class="card"><header class="output-heading"><h2>Catalog preview</h2><a href="#catalog" class="button small">Open catalog</a></header><p id="preview-status" class="feedback">Connect to the backend to see saved products.</p><ul id="catalog-preview" class="results"></ul></section>
+            <section class="card" id="recent-activity"><header class="output-heading"><h2>Recent batches</h2><span class="tag" id="stat-activity">—</span></header><p id="activity-empty" class="feedback">Batch history appears after connecting.</p><ul id="activity-list" class="activity-list"></ul></section>
+          </div>
+        </section>
+        <section id="page-catalog" data-page="catalog" hidden>
+          <header class="page-heading"><div><h1 tabindex="-1">Product Catalog</h1><p>Browse and filter saved products by marketplace.</p></div><a href="#batch" class="button primary">Add products</a></header>
+          <div id="catalog-slot"></div>
+        </section>
+        <section id="page-search" data-page="search" hidden>
+          <header class="page-heading"><div><h1 tabindex="-1">AI Search</h1><p id="search-provider">Connect a backend to check the recommendation provider.</p></div></header>
+          <div id="search-slot"></div>
+        </section>
+        <section id="page-batch" data-page="batch" hidden>
+          <header class="page-heading"><div><h1 tabindex="-1">Batch Scraper</h1><p>Collect up to 40 Amazon listings, then save or export the results.</p></div><button id="demo" class="button secondary" type="button">Load demo batch</button></header>
+          <div class="batch-grid">      <section class="card" aria-labelledby="collect-title">
+        <header class="card-heading"><h2 id="collect-title">Collect products</h2><span id="url-count">0 / 40</span></header>
+        <form id="collect">
+          <label for="urls">Product URLs</label>
+          <textarea id="urls" rows="5" required placeholder="https://www.amazon.com/dp/…" aria-describedby="url-hint"></textarea>
+          <p class="hint" id="url-hint">Paste one Amazon product link per line.</p>
+          <div class="actions">
+            <button id="start" class="button primary">Scrape batch</button>
+            <button id="retry" class="button secondary" type="button" hidden>Retry failed</button>
+            <button id="import" class="button secondary" type="button">Import JSON</button>
+            <input id="import-file" type="file" accept=".json,application/json" aria-label="Authorized product JSON" hidden>
+            <button id="upload" class="button secondary" type="button" disabled>Save to catalog</button>
+          </div>
+        </form>
+        </section>
+<section class="card batch-output"><div class="output-heading">
+          <h3>Batch results</h3>
+          <div class="actions">
+            <button id="csv" class="button small" type="button" disabled>Export CSV</button>
+            <button id="json" class="button small" type="button" disabled>Export JSON</button>
+          </div>
+        </div>
+        <progress id="batch-progress" aria-label="Batch progress" hidden></progress>
+        <p id="batch-status" class="feedback" role="status">Scrape URLs or load the demo batch to get started.</p>
+        <ol id="batch-queue" class="batch-queue"></ol>
+        <ul id="batch-results" class="results"></ul>
+      </section>
+</div>
+        </section>
+        <section id="page-compare" data-page="compare" hidden>
+          <header class="page-heading"><div><h1 tabindex="-1" id="comparison-title">Compare Products</h1><p>Review pricing, ratings, and listing details side by side.</p></div><button class="button secondary" id="compare-back">Back to results</button></header>
+          <div id="comparison-content"></div>
+        </section>
+        <section id="page-settings" data-page="settings" hidden>
+          <header class="page-heading"><div><h1 tabindex="-1">Settings</h1><p>Manage your connection and workspace preferences.</p></div></header>
+          <div class="settings-grid">
+            <section class="card" id="connection" aria-labelledby="connection-title"><h2 id="connection-title">Backend connection</h2>
+      <form id="connect-form">
+        <label for="origin">Backend origin</label>
+        <input id="origin" type="url" value="http://127.0.0.1:8000" required>
+        <label for="api-key">API key</label>
+        <input id="api-key" type="password" autocomplete="off" required>
+        <button class="button primary" id="test-connection">Check connection</button>
+        <p id="connection-feedback" class="feedback" role="status"></p>
+      </form>
+<p class="hint">Your scraper key stays in this tab. Gemini credentials belong in the backend environment.</p></section>
+            <section class="card"><h2>Preferences</h2><label>Appearance<select id="theme-select"><option value="dark">Dark</option><option value="light">Light</option></select></label><label>Default marketplace<select id="default-market"></select></label><label>Search result layout<select id="default-layout"><option value="grid">Grid</option><option value="list">List</option></select></label></section>
+            <section class="card"><h2>Data and recommendations</h2><p id="demo-banner" class="notice">Connect to detect the backend mode.</p><p class="hint">Set EMBEDDING_MODE to gemini or demo in the backend environment, then restart it. The browser demo runs locally without credentials.</p><button id="open-browser-demo" class="button secondary" type="button">Open browser demo</button></section>
+          </div>
+        </section>
+        <div id="search-workspace" hidden>      <section class="card" aria-labelledby="search-title">
+        <h2 id="search-title" class="sr-only">Search catalog</h2>
+        <form id="search">
+          <label for="query">What are you looking for?</label>
+          <div class="search-line"><input id="query" maxlength="500" placeholder="Wireless headphones with long battery life"><button id="recommend" class="button primary">Search catalog</button></div>
+          <div class="examples" id="search-examples" aria-label="Example queries from this catalog"></div>
+          <p class="hint search-scope">Searches saved records only. For new Amazon products, use <a href="#batch">Batch Scraper</a> with a product URL. Amazon-wide discovery is unavailable.</p>
+          <div class="fields">
+            <label>Search type<select id="search-mode"><option value="semantic">Recommendations</option><option value="keyword">Keyword</option><option value="browse">Browse catalog</option></select></label>
+            <label>Marketplace<select id="market"></select></label>
+            <label id="source-field">Catalog source<select id="search-source"><option value="catalog">Saved listings</option><option value="demo">Fictional demo listings</option></select></label>
+          </div>
+          <div class="actions">
+            <button id="browse" class="button secondary" type="button">Browse catalog</button>
+          </div>
+        </form>
+        <div class="output-heading">
+          <h3>Results</h3><div class="actions"><button type="button" class="button small" id="layout-toggle" aria-pressed="false">List view</button>
+          <label class="sort-label">Sort results<select id="sort-results">
+            <option value="default">Default</option><option value="title">Title A–Z</option><option value="rating">Highest rating</option>
+          </select></label></div>
+        </div>
+        <div class="compare-toolbar" id="compare-toolbar" hidden>
+          <p id="compare-status" class="feedback" role="status"></p>
+          <div class="actions">
+            <button id="open-compare" class="button secondary" type="button" disabled>Compare</button>
+            <button id="clear-compare" class="button small" type="button">Clear selection</button>
+          </div>
+        </div>
+        <p id="search-status" class="feedback" role="status">Search by description or keyword after saving products.</p>
+        <div class="skeletons" id="search-loading" aria-hidden="true" hidden><div></div><div></div><div></div></div>
+        <ol id="recommendations" class="results"></ol>
+        <button id="load-more" class="button secondary" type="button" hidden>Load more</button>
+      </section>
+</div>
+      </main>
+    </div>
+  </div>
+    <dialog id="product-detail" class="compare-dialog" aria-labelledby="product-detail-title">
+      <div class="dialog-heading">
+        <h2 id="product-detail-title">Product details</h2>
+        <form method="dialog"><button class="button secondary" aria-label="Close product details">Close</button></form>
+      </div>
+      <div id="product-detail-content"></div>
+    </dialog>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Amazon Product Scraper",
+  "description": "Collect Amazon product details and search your catalog by meaning.",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "optional_host_permissions": ["https://*/*", "http://localhost/*", "http://127.0.0.1/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "Open Amazon Product Scraper" }
+}
